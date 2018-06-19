@@ -327,29 +327,44 @@ class App extends Component {
     clickHandler = (character) => {
         console.log(character);
         //Check to see if character has been clicked 
-        this.state.characters.forEach(item => {
+        this.state.characters.map((item, index) => {
             if (item.name === character) {
+                //If it's been clicked game is over + start the game again
                 if (item.clicked) {
                     console.log("Game Over!");
                 } else {
+                    let newCharacters = [...this.state.characters];
+                    let score = this.state.score;
+                    score++;
+                    newCharacters[index].clicked = true;
+                    //If not then add 1 to the score
                     this.setState({
-                        score: this.state.score ++
-                    })
+                        score,
+                        characters: newCharacters,  
+                    }, () => console.log("State was changed", this.state.score, this.state.characters))
+
                     this.shuffleCards();
                 }
             }
         })
-        //If it's been clicked game is over + start the game again
-
-        //If not then add 1 to the score
-
-        //Change "state" of the card to clicked
-
         //Shuffle the cards and start the game again
     }
-
+    
     shuffleCards = () => {
+        let newCharacters = [...this.state.characters];
 
+        let i = newCharacters.length - 1;
+        while (i > 0) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const temp = newCharacters[i];
+          newCharacters[i] = newCharacters[j];
+          newCharacters[j] = temp;
+          i--;
+        }
+
+        this.setState({
+            characters: newCharacters
+        }, () => console.log("Updated"))
     }
 
     render() {
@@ -359,10 +374,9 @@ class App extends Component {
                 <div className="row">
                     {this.state.characters.map((character, index) => {
                         return (
-                            <div onClick = {() => this.clickHandler(character.name)} key = {index} className = "card">
-                                <div className = "col-md-2">
-                                    {/*<h2 className = "card-heading">{character.name}</h2>*/}
-                                    <img src={character.url} alt={character.name} className="img-thumbnail img-fluid"/>
+                            <div onClick = {() => this.clickHandler(character.name)} key = {index}>
+                                <div className = "col-xs-4 col-md-2">
+                                    <img src={character.url} alt={character.name} className="img-thumbnail"/>
                                 </div>
                             </div>
                         )
